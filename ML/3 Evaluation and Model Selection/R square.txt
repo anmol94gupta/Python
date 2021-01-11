@@ -1,0 +1,6 @@
+R^2 = 1- (SSresidual/SStotal)
+
+where SSresidual is Sum of Squares of Residuals
+and SStotal is Total Sum of Suqares (with the average line)
+
+The greater R^2 the better is it.

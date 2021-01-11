@@ -1,0 +1,6 @@
+By adding new variables, 
+if we can not reduce SS residual, sometimes.
+Therefore Adjustes R^2 = 1 - (1 - R^2)((n-1)/(n-p-1))
+where 
+p is number of regressors
+n is equal to sample size
