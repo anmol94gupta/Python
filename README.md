@@ -1,1 +1,1 @@
-# Refreshing my ML and templatising all models here for faster access later
+# Making templates for all important ML algos for faster access later
