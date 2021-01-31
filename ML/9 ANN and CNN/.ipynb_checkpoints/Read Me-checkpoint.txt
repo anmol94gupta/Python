@@ -1,0 +1,5 @@
+Softmax function : 
+or the normalized exponential function is a generalisation of the logistic function that squashes a k dimentional vector
+
+Cross entropy function : 
+Like the MSE but its called as loss function and not cost function.
