@@ -51,6 +51,8 @@ regressor.fit(X_train, y_train, epochs = 200, batch_size = 32)
 dataset_test = pd.read_csv('Google_Stock_Price_Test.csv')
 real_stock_price = dataset_test.iloc[:, 1:2].values
 
+# The Data preprocessing is - DONE 
+
 # Getting predicted stock price
 dataset_total = pd.concat((dataset_train['Open'], dataset_test['Open']), axis = 0)
 inputs = dataset_total[len(dataset_total) - len(dataset_test) - 60:].values
