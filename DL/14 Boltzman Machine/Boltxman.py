@@ -13,7 +13,7 @@ from torch.autograd import Variable # Stochastic gradient descent
 movies = pd.read_csv('ml-1m/movies.dat', sep = '::', header = None, engine = 'python', encoding = 'latin-1')
 users = pd.read_csv('ml-1m/users.dat', sep = '::', header = None, engine = 'python', encoding = 'latin-1')
 ratings = pd.read_csv('ml-1m/ratings.dat', sep = '::', header = None, engine = 'python', encoding = 'latin-1')
-
+# Last column in ratings is the timestamp
 
 # Preparing the training set and the test set
 training_set = pd.read_csv('ml-100k/u1.base', delimiter = '\t')
@@ -37,3 +37,7 @@ def convert(data):
   return new_data
 training_set = convert(training_set)
 test_set = convert(test_set)
+
+# Converting data to torch tensors
+training_set = torch.FloatTensor(training_set)
+test_set = torch.FloatTensor(test_set)
