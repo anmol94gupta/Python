@@ -21,9 +21,11 @@ ap.add_argument("-m", "--model", required=True,
 ap.add_argument("-c", "--confidence", type=float, default=0.5,
                 help="minimum probability to filter weak detections")
 args = vars(ap.parse_args())
+
 # load our serialized model from disk
 print("[INFO] loading model...")
 net = cv2.dnn.readNetFromCaffe(args["prototxt"], args["model"])
+
 # load the input image and construct an input blob for the image
 # by resizing to a fixed 300x300 pixels and then normalizing it
 image = cv2.imread(args["image"])
