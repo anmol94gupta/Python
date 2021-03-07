@@ -59,7 +59,6 @@ print("R={}, G={}, B={}".format(R, G, B))
 # resized = cv2.resize(image, dim)
 # cv2.imshow("Aspect Ratio Resize", resized)
 # cv2.waitKey(0)
-
 # or can us the following =>
 # manually computing the aspect ratio can be a pain so let's use the
 # imutils library instead
