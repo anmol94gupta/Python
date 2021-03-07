@@ -54,11 +54,11 @@ cv2.waitKey(0)
 # RESIZING - with aspect ratio
 # fixed resizing and distort aspect ratio so let's resize the width
 # to be 300px but compute the new height based on the aspect ratio
-# r = 300.0 / w
-# dim = (300, int(h * r))
-# resized = cv2.resize(image, dim)
-# cv2.imshow("Aspect Ratio Resize", resized)
-# cv2.waitKey(0)
+r = 300.0 / w
+dim = (300, int(h * r))
+resized = cv2.resize(image, dim)
+cv2.imshow("Aspect Ratio Resize", resized)
+cv2.waitKey(0)
 # or can us the following =>
 # manually computing the aspect ratio can be a pain so let's use the
 # imutils library instead
