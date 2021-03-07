@@ -7,9 +7,13 @@ Created on Fri Mar  5 23:07:17 2021
 """
 
 # import the necessary packages
+from imutils.video import VideoStream
 import numpy as np
 import argparse
+import imutils
+import time
 import cv2
+
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--image", required=True,
@@ -62,3 +66,4 @@ for i in range(0, detections.shape[2]):
 # show the output image
 cv2.imshow("Output", image)
 cv2.waitKey(0)
+
