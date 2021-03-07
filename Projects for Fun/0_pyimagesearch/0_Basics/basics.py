@@ -23,8 +23,8 @@ print("width={}, height={}, depth={}".format(w, h, d))
 
 #---------------------
 # PRINTING IMAGES
-# v2.imshow("Image", image)
-# cv2.waitKey(0)
+cv2.imshow("Image", image)
+cv2.waitKey(0)
 
 #---------------------
 #ACCESSING RGB VALUES
@@ -39,16 +39,16 @@ print("R={}, G={}, B={}".format(R, G, B))
 
 # extract a 100x100 pixel square ROI (Region of Interest) from the
 # input image starting at x=320,y=60 at ending at x=420,y=160
-# roi = image[60:160, 320:420]
-# cv2.imshow("ROI", roi)
-# cv2.waitKey(0)
+roi = image[60:160, 320:420]
+cv2.imshow("ROI", roi)
+cv2.waitKey(0)
 
 #---------------------
 # RESIZING - ignoring aspect ratio
 # resize the image to 200x200px, ignoring aspect ratio
-# resized = cv2.resize(image, (100, 200))
-# cv2.imshow("Fixed Resizing", resized)
-# cv2.waitKey(0)
+resized = cv2.resize(image, (100, 200))
+cv2.imshow("Fixed Resizing", resized)
+cv2.waitKey(0)
 
 #---------------------
 # RESIZING - with aspect ratio
@@ -62,9 +62,9 @@ print("R={}, G={}, B={}".format(R, G, B))
 # or can us the following =>
 # manually computing the aspect ratio can be a pain so let's use the
 # imutils library instead
-#resized = imutils.resize(image, width=300)
-#cv2.imshow("Imutils Resize", resized)
-#cv2.waitKey(0)
+resized = imutils.resize(image, width=300)
+cv2.imshow("Imutils Resize", resized)
+cv2.waitKey(0)
 
 #---------------------
 # ROTATION - Clipped
@@ -79,4 +79,12 @@ cv2.waitKey(0)
 # us out
 rotated = imutils.rotate_bound(image, 45)
 cv2.imshow("Imutils Bound Rotation", rotated)
+cv2.waitKey(0)
+
+#---------------------
+# SMOOTHING 
+# apply a Gaussian blur with a 11x11 kernel to the image to smooth it,
+# useful when reducing high frequency noise
+blurred = cv2.GaussianBlur(image, (11, 11), 0)
+cv2.imshow("Blurred", blurred)
 cv2.waitKey(0)
