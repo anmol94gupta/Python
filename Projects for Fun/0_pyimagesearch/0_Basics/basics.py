@@ -62,13 +62,21 @@ print("R={}, G={}, B={}".format(R, G, B))
 # or can us the following =>
 # manually computing the aspect ratio can be a pain so let's use the
 # imutils library instead
-resized = imutils.resize(image, width=300)
-cv2.imshow("Imutils Resize", resized)
-cv2.waitKey(0)
+#resized = imutils.resize(image, width=300)
+#cv2.imshow("Imutils Resize", resized)
+#cv2.waitKey(0)
 
 #---------------------
-# ROTATION
+# ROTATION - Clipped
 # rotation can also be easily accomplished via imutils with less code
 rotated = imutils.rotate(image, -45)
 cv2.imshow("Imutils Rotation", rotated)
+cv2.waitKey(0)
+#---------------------
+# ROTATION - Non Clipped
+# OpenCV doesn't "care" if our rotated image is clipped after rotation
+# so we can instead use another imutils convenience function to help
+# us out
+rotated = imutils.rotate_bound(image, 45)
+cv2.imshow("Imutils Bound Rotation", rotated)
 cv2.waitKey(0)
