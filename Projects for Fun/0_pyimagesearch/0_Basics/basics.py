@@ -44,8 +44,32 @@ print("R={}, G={}, B={}".format(R, G, B))
 # cv2.waitKey(0)
 
 #---------------------
-# RESIZING
+# RESIZING - ignoring aspect ratio
 # resize the image to 200x200px, ignoring aspect ratio
-resized = cv2.resize(image, (100, 200))
-cv2.imshow("Fixed Resizing", resized)
+# resized = cv2.resize(image, (100, 200))
+# cv2.imshow("Fixed Resizing", resized)
+# cv2.waitKey(0)
+
+#---------------------
+# RESIZING - with aspect ratio
+# fixed resizing and distort aspect ratio so let's resize the width
+# to be 300px but compute the new height based on the aspect ratio
+# r = 300.0 / w
+# dim = (300, int(h * r))
+# resized = cv2.resize(image, dim)
+# cv2.imshow("Aspect Ratio Resize", resized)
+# cv2.waitKey(0)
+
+# or can us the following =>
+# manually computing the aspect ratio can be a pain so let's use the
+# imutils library instead
+resized = imutils.resize(image, width=300)
+cv2.imshow("Imutils Resize", resized)
+cv2.waitKey(0)
+
+#---------------------
+# ROTATION
+# rotation can also be easily accomplished via imutils with less code
+rotated = imutils.rotate(image, -45)
+cv2.imshow("Imutils Rotation", rotated)
 cv2.waitKey(0)
