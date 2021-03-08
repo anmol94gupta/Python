@@ -8,14 +8,15 @@ Created on Fri Mar  5 23:07:17 2021
 
 # import the necessary packages
 from imutils.video import VideoStream
-import sys
-import os
 import numpy as np
 import argparse
 import imutils
 import time
 import cv2
 
+prototxt='deploy.prototxt.txt'
+model='res10_300x300_ssd_iter_140000.caffemodel'
+conf=0.5
 
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
@@ -29,8 +30,6 @@ ap.add_argument("-m", "--model", required=True,
 ap.add_argument("-c", "--confidence", type=float, default=0.5,
                 help="minimum probability to filter weak detections")
 args = vars(ap.parse_args())
-
-os.path.exists(args["prototxt"])
 
 # load our serialized model from disk
 print("[INFO] loading model...")
@@ -72,4 +71,6 @@ for i in range(0, detections.shape[2]):
 # show the output image
 cv2.imshow("Output", image)
 cv2.waitKey(0)
+
+# python detect_faces.py --image test1.jpg --prototxt deploy.prototxt.txt --model res10_300x300_ssd_iter_140000.caffemodel
 

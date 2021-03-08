@@ -16,11 +16,13 @@ def drawRects(img,detcts):
     detections=detcts
     (h,w)=image.shape[:2]
     for i in range(0,detections.shape[2]):
-        confidence=detections[0,0,i,2]      #Extracting confidence
+        confidence=detections[0,0,i,2]      
+        # Extracting confidence
         if confidence>conf:
-            box=detections[0,0,i,3:7]*np.array([w,h,w,h])   #Compute (x,y) coordinates for the bounding box
+            box=detections[0,0,i,3:7]*np.array([w,h,w,h])   
+            # Compute (x,y) coordinates for the bounding box
             (startX,startY,endX,endY)=box.astype('int')
-            #Drawing bounding box and puting confidence text
+            # Drawing bounding box and puting confidence text
             text='{:.2f}%'.format(confidence*100)
             y=startY-10 if startY-10>10 else startY+10
             cv2.rectangle(image,(startX,startY),(endX,endY),(0,0,255),2)
@@ -31,7 +33,7 @@ def drawRects(img,detcts):
 while True:
     _,feed=cam.read()
     image=feed
-    #blob = cv2.dnn.blobFromImages(images, scalefactor=1.0, size, mean, swapRB=True)
+    # blob = cv2.dnn.blobFromImages(images, scalefactor=1.0, size, mean, swapRB=True)
     blob=cv2.dnn.blobFromImage(cv2.resize(image,(300,300)),1.0,(300,300),(104.0,177.0,123.0)) #preprocessing Image
     net.setInput(blob)
     detections=net.forward()
