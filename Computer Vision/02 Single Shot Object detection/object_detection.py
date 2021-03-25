@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # Object Detection
 # For installing torch : pip install torch, pip install torchvision, pip install imageio, pip install imageio-ffmpeg
 # Importing the libraries
