@@ -13,10 +13,7 @@ import tensorflow as tf
 import re
 import time
  
- 
- 
 #------ DATA PREPROCESSING ------ 
- 
 
  
 # Importing the dataset
