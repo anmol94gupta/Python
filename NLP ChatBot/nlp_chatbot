@@ -58,7 +58,7 @@ def clean_text(text):
     text = re.sub(r"[-()\"#/@;:<>{}`+=~|.!?,]", "", text)
     return text
  
-# Cleaning the questions
+#------ Cleaning the questions
 clean_questions = []
 for question in questions:
     clean_questions.append(clean_text(question))
