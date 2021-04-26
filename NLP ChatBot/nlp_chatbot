@@ -41,8 +41,8 @@ for conversation in conversations_ids:
  
 #------ Doing a first cleaning of the texts questions and answers
 def clean_text(text):
-    text = text.lower()
-    text = re.sub(r"i'm", "i am", text)
+    text = text.lower() # converts to lower
+    text = re.sub(r"i'm", "i am", text) # sub does the replacing
     text = re.sub(r"he's", "he is", text)
     text = re.sub(r"she's", "she is", text)
     text = re.sub(r"that's", "that is", text)
