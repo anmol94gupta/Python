@@ -39,7 +39,7 @@ for conversation in conversations_ids:
         questions.append(id2line[conversation[i]])
         answers.append(id2line[conversation[i+1]])
  
-#------ Doing a first cleaning of the texts
+#------ Doing a first cleaning of the texts questions and answers
 def clean_text(text):
     text = text.lower()
     text = re.sub(r"i'm", "i am", text)
