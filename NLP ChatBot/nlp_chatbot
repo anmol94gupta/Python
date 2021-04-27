@@ -176,6 +176,9 @@ for length in range(1, 25 + 1):
 #------ Creating placeholders for the inputs and the targets
 def model_inputs():
     inputs = tf.placeholder(tf.int32, [None, None], name = 'input')
+    # tf.placeholder : https://www.tensorflow.org/api_docs/python/tf/compat/v1/placeholder
+    # Inserts a placeholder for a tensor that will be always fed.
+
     # Placeholders are basically variables that are used later.
     # int32 is the type of data that would input
     # the the inputs, 2D matrix in current case
@@ -189,6 +192,9 @@ def model_inputs():
 #------ Preprocessing the targets
 def preprocess_targets(targets, word2int, batch_size):
     left_side = tf.fill([batch_size, 1], word2int['<SOS>'])
+    # tf.fill : https://www.tensorflow.org/api_docs/python/tf/fill
+    # Creates a tensor filled with a scalar value.
+
     # batch_size = number of lines, we start with SOS token, basically its int value
     right_side = tf.strided_slice(targets, [0,0], [batch_size, -1], [1,1])
     # strided slice : extracts subset of a tensor (on what, starting point, end point, the slide while doing extraction)
@@ -201,14 +207,25 @@ def encoder_rnn(rnn_inputs, rnn_size, num_layers, keep_prob, sequence_length):
     # stacked RNN
     # model inputs, number of input tensors, number of layers, keep prob parameter, list of length of question in each batch
     lstm = tf.contrib.rnn.BasicLSTMCell(rnn_size)
+    # tf.contrib.rnn.BasicLSTMCell : https://www.tensorflow.org/api_docs/python/tf/compat/v1/nn/rnn_cell/BasicLSTMCell 
+    # Basic LSTM recurrent network cell.
+    
     lstm_dropout = tf.contrib.rnn.DropoutWrapper(lstm, input_keep_prob = keep_prob)
+    # tf.contrib.rnn.DropoutWrapper : https://www.tensorflow.org/api_docs/python/tf/compat/v1/nn/rnn_cell/DropoutWrapper
+    #Operator adding dropout to inputs and outputs of the given cell.
+
     encoder_cell = tf.contrib.rnn.MultiRNNCell([lstm_dropout] * num_layers)
-    # cell of the encoder : consists 
+    # tf.contrib.rnn.MultiRNNCell : https://www.tensorflow.org/api_docs/python/tf/compat/v1/nn/rnn_cell/MultiRNNCell
+    # RNN cell composed sequentially of multiple simple cells.
+    
     encoder_output, encoder_state = tf.nn.bidirectional_dynamic_rnn(cell_fw = encoder_cell,
                                                                     cell_bw = encoder_cell,
                                                                     sequence_length = sequence_length,
                                                                     inputs = rnn_inputs,
                                                                     dtype = tf.float32)
+    # tf.nn.bidirectional_dynamic_rnn : https://www.tensorflow.org/api_docs/python/tf/compat/v1/nn/bidirectional_dynamic_rnn
+    # Creates a dynamic version of bidirectional recurrent neural network. (deprecated)
+    
     # two varilables as the bidirectional dynamic rnn will return 2 values
     # for a bidirectional rnn the forward and backward sizes should be same.
     return encoder_state
@@ -217,22 +234,35 @@ def encoder_rnn(rnn_inputs, rnn_size, num_layers, keep_prob, sequence_length):
 def decode_training_set(encoder_state, decoder_cell, decoder_embedded_input, sequence_length, decoding_scope, output_function, keep_prob, batch_size):
     attention_states = tf.zeros([batch_size, 1, decoder_cell.output_size])
     attention_keys, attention_values, attention_score_function, attention_construct_function = tf.contrib.seq2seq.prepare_attention(attention_states, attention_option = "bahdanau", num_units = decoder_cell.output_size)
-    training_decoder_function = tf.contrib.seq2seq.attention_decoder_fn_train(encoder_state[0],
-                                                                              attention_keys,
-                                                                              attention_values,
-                                                                              attention_score_function,
-                                                                              attention_construct_function,
-                                                                              name = "attn_dec_train")
+    # tf.contrib.seq2seq.prepare_attention : https://docs1.w3cub.com/tensorflow~python/tf/contrib/seq2seq/prepare_attention/
+    # Prepare keys/values/functions for attention.
+    
+    training_decoder_function = tf.contrib.seq2seq.attention_decoder_fn_train(encoder_state[0], # got from previous function, 1 as we want the values
+                                                                              attention_keys, # will be compared to the target states
+                                                                              attention_values, # used to construct the context vectors
+                                                                              attention_score_function, # compute the similaritiy between the keys and the target states
+                                                                              attention_construct_function, # to build the attention state
+                                                                              name = "attn_dec_train") # namescope for the deocder function
+   # tf.contrib.seq2seq.attention_decoder_fn_train : https://docs1.w3cub.com/tensorflow~python/tf/contrib/seq2seq/attention_decoder_fn_train/
+   # Attentional decoder function for dynamic_rnn_decoder during training.
+       
     decoder_output, decoder_final_state, decoder_final_context_state = tf.contrib.seq2seq.dynamic_rnn_decoder(decoder_cell,
                                                                                                               training_decoder_function,
                                                                                                               decoder_embedded_input,
                                                                                                               sequence_length,
                                                                                                               scope = decoding_scope)
+    # tf.contrib.seq2seq.dynamic_rnn_decoder : https://docs1.w3cub.com/tensorflow~python/tf/contrib/seq2seq/dynamic_rnn_decoder/
+    # Dynamic RNN decoder for a sequence-to-sequence model specified by RNNCell and decoder function.
+
     decoder_output_dropout = tf.nn.dropout(decoder_output, keep_prob)
+    # tf.nn.dropout : https://www.tensorflow.org/api_docs/python/tf/nn/dropout
+    # Computes dropout: randomly sets elements to zero to prevent overfitting.
+
     return output_function(decoder_output_dropout)
  
 #------ Decoding the test/validation set
 def decode_test_set(encoder_state, decoder_cell, decoder_embeddings_matrix, sos_id, eos_id, maximum_length, num_words, decoding_scope, output_function, keep_prob, batch_size):
+    # encoder stated from above fucntion, cell of decoder, mappings from word to vector of real numbers, 
     attention_states = tf.zeros([batch_size, 1, decoder_cell.output_size])
     attention_keys, attention_values, attention_score_function, attention_construct_function = tf.contrib.seq2seq.prepare_attention(attention_states, attention_option = "bahdanau", num_units = decoder_cell.output_size)
     test_decoder_function = tf.contrib.seq2seq.attention_decoder_fn_inference(output_function,
