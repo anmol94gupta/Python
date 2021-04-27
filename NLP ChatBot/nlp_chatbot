@@ -246,9 +246,9 @@ def decode_training_set(encoder_state, decoder_cell, decoder_embedded_input, seq
    # tf.contrib.seq2seq.attention_decoder_fn_train : https://docs1.w3cub.com/tensorflow~python/tf/contrib/seq2seq/attention_decoder_fn_train/
    # Attentional decoder function for dynamic_rnn_decoder during training.
        
-    decoder_output, decoder_final_state, decoder_final_context_state = tf.contrib.seq2seq.dynamic_rnn_decoder(decoder_cell,
-                                                                                                              training_decoder_function,
-                                                                                                              decoder_embedded_input,
+    decoder_output, decoder_final_state, decoder_final_context_state = tf.contrib.seq2seq.dynamic_rnn_decoder(decoder_cell, # arguments of decoder cell
+                                                                                                              training_decoder_function, # that we got in previous line
+                                                                                                              decoder_embedded_input, # which is one of arguments of the funciton
                                                                                                               sequence_length,
                                                                                                               scope = decoding_scope)
     # tf.contrib.seq2seq.dynamic_rnn_decoder : https://docs1.w3cub.com/tensorflow~python/tf/contrib/seq2seq/dynamic_rnn_decoder/
@@ -277,25 +277,40 @@ def decode_test_set(encoder_state, decoder_cell, decoder_embeddings_matrix, sos_
                                                                               maximum_length,
                                                                               num_words,
                                                                               name = "attn_dec_inf")
+    # tf.contrib.seq2seq.attention_decoder_fn_inference : https://docs1.w3cub.com/tensorflow~python/tf/contrib/seq2seq/attention_decoder_fn_inference/
+    # Attentional decoder function for dynamic_rnn_decoder during inference.
+
     test_predictions, decoder_final_state, decoder_final_context_state = tf.contrib.seq2seq.dynamic_rnn_decoder(decoder_cell,
                                                                                                                 test_decoder_function,
                                                                                                                 scope = decoding_scope)
     return test_predictions
  
-# Creating the Decoder RNN
+#------ Creating the Decoder RNN
 def decoder_rnn(decoder_embedded_input, decoder_embeddings_matrix, encoder_state, num_words, sequence_length, rnn_size, num_layers, word2int, keep_prob, batch_size):
     with tf.variable_scope("decoding") as decoding_scope:
+        # tf.variable_scope : https://www.tensorflow.org/api_docs/python/tf/compat/v1/variable_scope
+        # A context manager for defining ops that creates variables (layers).
+
         lstm = tf.contrib.rnn.BasicLSTMCell(rnn_size)
         lstm_dropout = tf.contrib.rnn.DropoutWrapper(lstm, input_keep_prob = keep_prob)
         decoder_cell = tf.contrib.rnn.MultiRNNCell([lstm_dropout] * num_layers)
-        weights = tf.truncated_normal_initializer(stddev = 0.1)
+        weights = tf.truncated_normal_initializer(stddev = 0.1) # associated to neurons of the fully connected layers
+        # tf.truncated_normal_initializer : https://www.tensorflow.org/api_docs/python/tf/compat/v1/truncated_normal_initializer
+        # Initializer that generates a truncated normal distribution.
+
         biases = tf.zeros_initializer()
+        # tf.zeros_initializer : https://www.tensorflow.org/api_docs/python/tf/zeros_initializer
+        # Initializer that generates tensors initialized to 0.
+
         output_function = lambda x: tf.contrib.layers.fully_connected(x,
                                                                       num_words,
-                                                                      None,
+                                                                      None, # for the normalizer
                                                                       scope = decoding_scope,
                                                                       weights_initializer = weights,
                                                                       biases_initializer = biases)
+        # tf.contrib.layers.fully_connected : http://man.hubwiz.com/docset/TensorFlow.docset/Contents/Resources/Documents/api_docs/python/tf/contrib/layers/fully_connected.html
+        # Adds a fully connected layer.
+
         training_predictions = decode_training_set(encoder_state,
                                                    decoder_cell,
                                                    decoder_embedded_input,
@@ -305,6 +320,7 @@ def decoder_rnn(decoder_embedded_input, decoder_embeddings_matrix, encoder_state
                                                    keep_prob,
                                                    batch_size)
         decoding_scope.reuse_variables()
+        # we want to reuse variables that were used in this decoding scope
         test_predictions = decode_test_set(encoder_state,
                                            decoder_cell,
                                            decoder_embeddings_matrix,
@@ -318,7 +334,7 @@ def decoder_rnn(decoder_embedded_input, decoder_embeddings_matrix, encoder_state
                                            batch_size)
     return training_predictions, test_predictions
  
-# Building the seq2seq model
+#------ Building the seq2seq model
 def seq2seq_model(inputs, targets, keep_prob, batch_size, sequence_length, answers_num_words, questions_num_words, encoder_embedding_size, decoder_embedding_size, rnn_size, num_layers, questionswords2int):
     encoder_embedded_input = tf.contrib.layers.embed_sequence(inputs,
                                                               answers_num_words + 1,
