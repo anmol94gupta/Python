@@ -183,12 +183,15 @@ def model_inputs():
     targets = tf.placeholder(tf.int32, [None, None], name = 'target')
     lr = tf.placeholder(tf.float32, name = 'learning_rate')
     keep_prob = tf.placeholder(tf.float32, name = 'keep_prob')
+    # keep_prob : for dropout rate
     return inputs, targets, lr, keep_prob
  
 # Preprocessing the targets
 def preprocess_targets(targets, word2int, batch_size):
     left_side = tf.fill([batch_size, 1], word2int['<SOS>'])
+    # batch_size = number of lines, we start with SOS token, basically its int value
     right_side = tf.strided_slice(targets, [0,0], [batch_size, -1], [1,1])
+    # strided slice : extracts subset of a tensor (on what, starting point, end point, the slide while doing extraction)
     preprocessed_targets = tf.concat([left_side, right_side], 1)
     return preprocessed_targets
  
