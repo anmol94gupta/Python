@@ -173,7 +173,7 @@ for length in range(1, 25 + 1):
  
  
  
-# Creating placeholders for the inputs and the targets
+#------ Creating placeholders for the inputs and the targets
 def model_inputs():
     inputs = tf.placeholder(tf.int32, [None, None], name = 'input')
     # Placeholders are basically variables that are used later.
@@ -186,28 +186,34 @@ def model_inputs():
     # keep_prob : for dropout rate
     return inputs, targets, lr, keep_prob
  
-# Preprocessing the targets
+#------ Preprocessing the targets
 def preprocess_targets(targets, word2int, batch_size):
     left_side = tf.fill([batch_size, 1], word2int['<SOS>'])
     # batch_size = number of lines, we start with SOS token, basically its int value
     right_side = tf.strided_slice(targets, [0,0], [batch_size, -1], [1,1])
     # strided slice : extracts subset of a tensor (on what, starting point, end point, the slide while doing extraction)
     preprocessed_targets = tf.concat([left_side, right_side], 1)
+    # 1 = horizontal concatenation
     return preprocessed_targets
  
-# Creating the Encoder RNN
+#------ Creating the Encoder RNN
 def encoder_rnn(rnn_inputs, rnn_size, num_layers, keep_prob, sequence_length):
+    # stacked RNN
+    # model inputs, number of input tensors, number of layers, keep prob parameter, list of length of question in each batch
     lstm = tf.contrib.rnn.BasicLSTMCell(rnn_size)
     lstm_dropout = tf.contrib.rnn.DropoutWrapper(lstm, input_keep_prob = keep_prob)
     encoder_cell = tf.contrib.rnn.MultiRNNCell([lstm_dropout] * num_layers)
+    # cell of the encoder : consists 
     encoder_output, encoder_state = tf.nn.bidirectional_dynamic_rnn(cell_fw = encoder_cell,
                                                                     cell_bw = encoder_cell,
                                                                     sequence_length = sequence_length,
                                                                     inputs = rnn_inputs,
                                                                     dtype = tf.float32)
+    # two varilables as the bidirectional dynamic rnn will return 2 values
+    # for a bidirectional rnn the forward and backward sizes should be same.
     return encoder_state
  
-# Decoding the training set
+#------ Decoding the training set
 def decode_training_set(encoder_state, decoder_cell, decoder_embedded_input, sequence_length, decoding_scope, output_function, keep_prob, batch_size):
     attention_states = tf.zeros([batch_size, 1, decoder_cell.output_size])
     attention_keys, attention_values, attention_score_function, attention_construct_function = tf.contrib.seq2seq.prepare_attention(attention_states, attention_option = "bahdanau", num_units = decoder_cell.output_size)
@@ -225,7 +231,7 @@ def decode_training_set(encoder_state, decoder_cell, decoder_embedded_input, seq
     decoder_output_dropout = tf.nn.dropout(decoder_output, keep_prob)
     return output_function(decoder_output_dropout)
  
-# Decoding the test/validation set
+#------ Decoding the test/validation set
 def decode_test_set(encoder_state, decoder_cell, decoder_embeddings_matrix, sos_id, eos_id, maximum_length, num_words, decoding_scope, output_function, keep_prob, batch_size):
     attention_states = tf.zeros([batch_size, 1, decoder_cell.output_size])
     attention_keys, attention_values, attention_score_function, attention_construct_function = tf.contrib.seq2seq.prepare_attention(attention_states, attention_option = "bahdanau", num_units = decoder_cell.output_size)
