@@ -340,9 +340,15 @@ def seq2seq_model(inputs, targets, keep_prob, batch_size, sequence_length, answe
                                                               answers_num_words + 1,
                                                               encoder_embedding_size,
                                                               initializer = tf.random_uniform_initializer(0, 1))
+    # tf.contrib.layers.embed_sequence : http://tensorflow.biotecan.com/python/Python_1.8/tensorflow.google.cn/api_docs/python/tf/contrib/layers/embed_sequence.html
+    # Maps a sequence of symbols to a sequence of embeddings. Typical use case would be reusing embeddings between an encoder and decoder.
+    
     encoder_state = encoder_rnn(encoder_embedded_input, rnn_size, num_layers, keep_prob, sequence_length)
     preprocessed_targets = preprocess_targets(targets, questionswords2int, batch_size)
     decoder_embeddings_matrix = tf.Variable(tf.random_uniform([questions_num_words + 1, decoder_embedding_size], 0, 1))
+    # tf.random_uniform : https://www.tensorflow.org/api_docs/python/tf/random/uniform
+    # Outputs random values from a uniform distribution.
+
     decoder_embedded_input = tf.nn.embedding_lookup(decoder_embeddings_matrix, preprocessed_targets)
     training_predictions, test_predictions = decoder_rnn(decoder_embedded_input,
                                                          decoder_embeddings_matrix,
