@@ -175,17 +175,17 @@ for length in range(1, 25 + 1):
  
 #------ Creating placeholders for the inputs and the targets
 def model_inputs():
-    inputs = tf.placeholder(tf.int32, [None, None], name = 'input')
-    # tf.placeholder : https://www.tensorflow.org/api_docs/python/tf/compat/v1/placeholder
+    inputs = tf.compat.v1.placeholder(tf.int32, [None, None], name = 'input')
+    # tf.compat.v1.placeholder : https://www.tensorflow.org/api_docs/python/tf/compat/v1/placeholder
     # Inserts a placeholder for a tensor that will be always fed.
 
     # Placeholders are basically variables that are used later.
     # int32 is the type of data that would input
     # the the inputs, 2D matrix in current case
     # name of input
-    targets = tf.placeholder(tf.int32, [None, None], name = 'target')
-    lr = tf.placeholder(tf.float32, name = 'learning_rate')
-    keep_prob = tf.placeholder(tf.float32, name = 'keep_prob')
+    targets = tf.compat.v1.placeholder(tf.int32, [None, None], name = 'target')
+    lr = tf.compat.v1.placeholder(tf.float32, name = 'learning_rate')
+    keep_prob = tf.compat.v1.placeholder(tf.float32, name = 'keep_prob')
     # keep_prob : for dropout rate
     return inputs, targets, lr, keep_prob
  
@@ -382,11 +382,14 @@ min_learning_rate = 0.0001
 keep_probability = 0.5
  
 #------ Defining a session
-tf.reset_default_graph()
+tf.compat.v1.reset_default_graph()
+#tf.reset_default_graph()
 # tf.reset_default_graph : https://www.tensorflow.org/api_docs/python/tf/compat/v1/reset_default_graph
 # Clears the default graph stack and resets the global default graph.
 
-session = tf.InteractiveSession()
+session = tf.compat.v1.InteractiveSession()
+
+# session = tf.InteractiveSession()
 # tf.InteractiveSession : https://www.tensorflow.org/api_docs/python/tf/compat/v1/InteractiveSession
 # A TensorFlow Session for use in interactive contexts, such as a shell.
  
@@ -395,8 +398,8 @@ inputs, targets, lr, keep_prob = model_inputs()
 # using the function made above
  
 #------ Setting the sequence length
-sequence_length = tf.placeholder_with_default(25, None, name = 'sequence_length')
-# tf.placeholder_with_default : https://www.tensorflow.org/api_docs/python/tf/compat/v1/placeholder_with_default
+sequence_length = tf.compat.v1.placeholder_with_default(25, None, name = 'sequence_length')
+# tf.compat.v1.placeholder_with_default : https://www.tensorflow.org/api_docs/python/tf/compat/v1/placeholder_with_default
 # A placeholder op that passes through input when its output is not fed.5 
     
 #------ Getting the shape of the inputs tensor
@@ -445,7 +448,7 @@ def apply_padding(batch_of_sequences, word2int):
  
 #------ Splitting the data into batches of questions and answers
 def split_into_batches(questions, answers, batch_size):
-    for batch_index in range(0, len(questions) // batch_size):
+    for batch_index in range(0, len(questions) // batch_size): # // gives an integer
         start_index = batch_index * batch_size
         questions_in_batch = questions[start_index : start_index + batch_size]
         answers_in_batch = answers[start_index : start_index + batch_size]
@@ -479,7 +482,7 @@ for epoch in range(1, epochs + 1):
                                                                                                keep_prob: keep_probability})
         total_training_loss_error += batch_training_loss_error
         ending_time = time.time()
-        batch_time = ending_time - starting_time
+        batch_time = ending_time - starting_time # training time
         if batch_index % batch_index_check_training_loss == 0:
             print('Epoch: {:>3}/{}, Batch: {:>4}/{}, Training Loss Error: {:>6.3f}, Training Time on 100 Batches: {:d} seconds'.format(epoch,
                                                                                                                                        epochs,
@@ -487,6 +490,8 @@ for epoch in range(1, epochs + 1):
                                                                                                                                        len(training_questions) // batch_size,
                                                                                                                                        total_training_loss_error / batch_index_check_training_loss,
                                                                                                                                        int(batch_time * batch_index_check_training_loss)))
+             # :>3 = for selecting 3 figures 
+             
             total_training_loss_error = 0
         if batch_index % batch_index_check_validation_loss == 0 and batch_index > 0:
             total_validation_loss_error = 0
@@ -505,6 +510,8 @@ for epoch in range(1, epochs + 1):
             learning_rate *= learning_rate_decay
             if learning_rate < min_learning_rate:
                 learning_rate = min_learning_rate
+               
+            # taking care of early stopping
             list_validation_loss_error.append(average_validation_loss_error)
             if average_validation_loss_error <= min(list_validation_loss_error):
                 print('I speak better now!!')
